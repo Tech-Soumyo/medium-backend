@@ -12,31 +12,50 @@ const app = new Hono<{
 }>();
 
 app.post("/api/v1/signup", async (c) => {
+  // Initialize Prisma client with the database URL and acceleration extension
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const body = await c.req.json();
   try {
+    // Parse the request body to get email and password
+    const body = await c.req.json();
+
+    // Validate the input: Check if email and password are provided
+    if (!body.email || !body.password) {
+      c.status(400); // Bad Request
+      return c.json({ error: "Email and password are required" });
+    }
+
+    // Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+
+    // Create the user in the database
     const user = await prisma.user.create({
       data: {
         email: body.email,
-        password: body.password,
+        password: hashedPassword,
       },
     });
+
+    // Generate a JWT token with the user's ID
     const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+
+    // Return the JWT token in the response
     return c.json({ jwt: token });
   } catch (e) {
-    console.error("Signup Error:", e); // Log the actual error
-    c.status(403);
-    if (e instanceof Error) {
-      return c.json({ error: "error while signing up", details: e.message });
-    } else {
-      return c.json({
-        error: "error while signing up",
-        details: "Unknown error occurred",
-      });
-    }
+    // Log the actual error for debugging
+    console.error("Signup Error:", e);
+
+    // Return a 403 status code and error message
+    c.status(403); // Forbidden
+    return c.json({
+      error: "Error while signing up",
+      details: e instanceof Error ? e.message : "Unknown error occurred",
+    });
+  } finally {
+    // Ensure the Prisma client is disconnected after the request is processed
+    await prisma.$disconnect();
   }
 });
 
