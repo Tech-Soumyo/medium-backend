@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { jwt, sign, verify } from "hono/jwt";
+import bcrypt from "bcrypt";
 
 const app = new Hono<{
   Bindings: {
@@ -40,25 +41,56 @@ app.post("/api/v1/signup", async (c) => {
 });
 
 app.post("/api/v1/signin", async (c) => {
+  // Initialize Prisma client with the database URL and acceleration extension
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const body = await c.req.json();
-  const user = await prisma.user.findUnique({
-    where: {
-      email: body.email,
-      password: body.password,
-    },
-  });
+  try {
+    // Parse the request body to get email and password
+    const body = await c.req.json();
 
-  if (!user) {
-    c.status(403);
-    return c.json({ error: "user not found" });
+    // Validate the input: Check if email and password are provided
+    if (!body.email || !body.password) {
+      c.status(400); // Bad Request
+      return c.json({ error: "Email and password are required" });
+    }
+
+    // Find the user in the database by email
+    const user = await prisma.user.findUnique({
+      where: {
+        email: body.email,
+        password: body.password,
+      },
+    });
+
+    // If the user is not found, return a 403 status code
+    if (!user) {
+      c.status(403); // Forbidden
+      return c.json({ error: "User not found" });
+    }
+
+    // Verify the password using bcrypt
+    const isPasswordValid = await bcrypt.compare(body.password, user.password);
+    if (!isPasswordValid) {
+      // If the password is invalid, return a 403 status code
+      c.status(403); // Forbidden
+      return c.json({ error: "Invalid credentials" });
+    }
+
+    // Generate a JWT token with the user's ID
+    const jwt = await sign({ id: user.id }, c.env.JWT_SECRET);
+
+    // Return the JWT token in the response
+    return c.json({ jwt });
+  } catch (error) {
+    // Handle any errors during the process
+    c.status(500); // Internal Server Error
+    return c.json({ error: "Internal Server Error" });
+  } finally {
+    // Ensure the Prisma client is disconnected after the request is processed
+    await prisma.$disconnect();
   }
-
-  const jwt = await sign({ id: user.id }, c.env.JWT_SECRET);
-  return c.json({ jwt });
 });
 
 app.use("/api/v1/blog/*", async (c, next) => {
