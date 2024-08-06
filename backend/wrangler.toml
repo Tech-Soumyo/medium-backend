@@ -1,7 +1,17 @@
 name = "backend"
 compatibility_date = "2024-08-02"
 
-# [vars]
+
+[vars]
+DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiOGQyZTFjODUtMzAzNy00NmNlLTk4ZWEtMjBlZTJjNmNlM2UzIiwidGVuYW50X2lkIjoiYjI4MGM3MTIwMWIyYmU2MGI3NWM5NzEwMmFiMWRjMGVjYmJkM2RmOTdjY2E3N2NiM2U5ZDRjYjI2YTI4ZjhhMyIsImludGVybmFsX3NlY3JldCI6IjYwNDA0MmI0LWZhNTMtNDY4MC05MmM5LTUxZDhlN2NkNmJiNiJ9.VfPV1nTlVZgZWtsqIanJMqyUjmleLQ6g4BEtQwFwmm8"
+JWT_SECRET = "asdasdasd"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "user-prisma-api1"
+database_id = "915d054a-87e8-49f5-b1ab-1b892cd51546"
+migrations_dir = "prisma/migrations"
+
 # MY_VAR = "my-variable"
 
 # [[kv_namespaces]]
@@ -12,10 +22,7 @@ compatibility_date = "2024-08-02"
 # binding = "MY_BUCKET"
 # bucket_name = "my-bucket"
 
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
+
 
 # [ai]
 # binding = "AI"
