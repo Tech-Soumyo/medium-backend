@@ -56,46 +56,50 @@ blogRouter.post("/", async (c) => {
   });
 });
 
-blogRouter.put("/", (c) => {
-  return c.text("Blog Page!");
+blogRouter.put("/", async (c) => {
+  const body: any = c.req.json();
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // const authorId = c.get("userId");
+  const blog = await prisma.blog.update({
+    where: {
+      id: body.id,
+    },
+    data: {
+      title: body.title,
+      content: body.content,
+      authorId: 1,
+    },
+  });
+  return c.json({
+    id: blog.id,
+  });
 });
 
-blogRouter.get("/", (c) => {
-  return c.text("Blog Id!");
+blogRouter.get("/", async (c) => {
+  const body: any = c.req.json();
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // const authorId = c.get("userId");
+  try {
+    const blog = await prisma.blog.findFirst({
+      where: {
+        id: body.id,
+      },
+    });
+    return c.json({
+      blog,
+    });
+  } catch (error) {
+    c.status(411);
+    return c.json({ error: "Error while fetching Blog Posts" });
+  }
 });
 
 blogRouter.get("/bulk", (c) => {
   return c.text("Blog Id!");
-});
-
-const prisma = new PrismaClient();
-
-blogRouter.post("/api/v1/blog", async (c) => {
-  const body = await c.req.json();
-
-  // Ensure the body contains the required fields
-  if (!body?.title || !body?.content || !body?.authorId) {
-    c.status(400);
-    return c.json({ error: "Title, content, and authorId are required" });
-  }
-
-  const { title, content, authorId } = body;
-
-  try {
-    const blog = await prisma.blog.create({
-      data: {
-        title: title,
-        content: content,
-        authorId: Number(authorId),
-      },
-    });
-
-    return c.json(blog);
-  } catch (error) {
-    console.error(error);
-    c.status(500);
-    return c.json({ error: "Internal Server Error" });
-  } finally {
-    await prisma.$disconnect();
-  }
 });
