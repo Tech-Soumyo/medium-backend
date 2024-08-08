@@ -6,6 +6,7 @@
     "env": "dotenv -e .dev.vars"
   },
   "dependencies": {
+    "@devs-project/medium-common": "^1.0.0",
     "@neondatabase/serverless": "^0.9.4",
     "@prisma/adapter-neon": "^5.17.0",
     "@prisma/client": "^5.18.0",
