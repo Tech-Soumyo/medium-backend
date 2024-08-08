@@ -9,7 +9,7 @@ JWT_SECRET = "asdasdasd"
 [[d1_databases]]
 binding = "DB"
 database_name = "user-prisma-api1"
-database_id = "915d054a-87e8-49f5-b1ab-1b892cd51546"
+database_id = "bf3f9786-834c-45a4-9c6b-fe031f828692"
 migrations_dir = "prisma/migrations"
 
 # MY_VAR = "my-variable"
