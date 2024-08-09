@@ -4,7 +4,7 @@ import { SignupInput } from "@devs-project/medium-common";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 
-export const Auth = ({ type }: { type: "signup" | "signin" }) => {
+export const Auth = ({ type }: { type: "signin" | "signup" }) => {
   const navigate = useNavigate();
   const [postInputs, setPostInputs] = useState<SignupInput>({
     name: "",
@@ -83,7 +83,7 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
               />
             ) : null}
             <LabelledInput
-              label="Username"
+              label="email"
               placeholder="harkirat@gmail.com"
               onChange={(e) => {
                 setPostInputs({
