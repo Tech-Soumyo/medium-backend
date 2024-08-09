@@ -1,7 +1,19 @@
-import React from "react";
+import { Auth } from "../components/Auth";
+import Quote from "../components/Quote";
 
-function Signin() {
-  return <div>Signin</div>;
+function Signup() {
+  return (
+    <div>
+      <div className=" grid grid-cols-1 lg:grid-cols-2">
+        <div>
+          <Auth type="signup" />
+        </div>
+        <div className="hidden lg:block">
+          <Quote />
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default Signin;
+export default Signup;
