@@ -4,14 +4,13 @@ import { SignupInput } from "@devs-project/medium-common";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 
-export const Auth = ({ type }: { type: "signin" | "signup" }) => {
+export const Auth = ({ type }: { type: "signup" | "signin" }) => {
   const navigate = useNavigate();
   const [postInputs, setPostInputs] = useState<SignupInput>({
     name: "",
     email: "",
     password: "",
   });
-
   async function sendRequest() {
     try {
       const response = await axios.post(
@@ -50,7 +49,6 @@ export const Auth = ({ type }: { type: "signin" | "signup" }) => {
     }
     // alert the user here that the request failed
   }
-
   return (
     <div className="h-screen flex justify-center flex-col">
       <div className="flex justify-center">
@@ -83,7 +81,7 @@ export const Auth = ({ type }: { type: "signin" | "signup" }) => {
               />
             ) : null}
             <LabelledInput
-              label="email"
+              label="Username"
               placeholder="harkirat@gmail.com"
               onChange={(e) => {
                 setPostInputs({
@@ -116,14 +114,12 @@ export const Auth = ({ type }: { type: "signin" | "signup" }) => {
     </div>
   );
 };
-
 interface LabelledInputType {
   label: string;
   placeholder: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   type?: string;
 }
-
 function LabelledInput({
   label,
   placeholder,
