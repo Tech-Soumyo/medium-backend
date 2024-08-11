@@ -6,22 +6,22 @@ import { useBlogs } from "../hooks";
 export const Blogs = () => {
   const { loading, blogs } = useBlogs();
 
-  // if (loading) {
-  //   return (
-  //     <div>
-  //       <Appbar />
-  //       <div className="flex justify-center">
-  //         <div>
-  //           <BlogSkeleton />
-  //           <BlogSkeleton />
-  //           <BlogSkeleton />
-  //           <BlogSkeleton />
-  //           <BlogSkeleton />
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div>
+        <Appbar />
+        <div className="flex justify-center">
+          <div>
+            <BlogSkeleton />
+            <BlogSkeleton />
+            <BlogSkeleton />
+            <BlogSkeleton />
+            <BlogSkeleton />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
