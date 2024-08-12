@@ -14,7 +14,7 @@ export const blogRouter = new Hono<{
     userId: string;
   };
 }>();
-
+//
 blogRouter.use("/*", async (c, next) => {
   const authHeader = c.req.header("authorization") || "";
 
@@ -40,7 +40,7 @@ blogRouter.use("/*", async (c, next) => {
     });
   }
 });
-
+//
 blogRouter.post("/", async (c) => {
   const body = await c.req.json();
   const { success } = creatBlogInput.safeParse(body);
@@ -152,128 +152,52 @@ blogRouter.get("/:id", async (c) => {
   }
 });
 
-// blogRouter.get("/:id", async (c) => {
-//   const id = c.req.param("id");
+// blogRouter.delete("/delete/:id", async (c) => {
 //   const prisma = new PrismaClient({
 //     datasourceUrl: c.env.DATABASE_URL,
 //   }).$extends(withAccelerate());
 
-//   try {
-//     const blog = await prisma.blog.findFirst({
-//       where: {
-//         id: Number(id),
-//       },
-//       select: {
-//         id: true,
-//         title: true,
-//         content: true,
-//         author: {
-//           select: {
-//             name: true,
-//           },
-//         },
-//       },
-//     });
+//   const token = c.req.header("authorization");
+//   if (!token) {
+//     return c.json({ msg: "Authentication token is missing" });
+//   }
 
-//     return c.json({
-//       blog,
-//     });
+//   let userId;
+//   try {
+//     const decoded = await verify(token, c.env.JWT_SECRET);
+//     userId = decoded.id;
 //   } catch (e) {
-//     c.status(411); // 4
-//     return c.json({
-//       message: "Error while fetching blog post",
-//     });
-//   }
-// });
-
-// // import { createBlogInput, updateBlogInput } from "@100xdevs/medium-common";
-// import { PrismaClient } from "@prisma/client/edge";
-// import { withAccelerate } from "@prisma/extension-accelerate";
-// import { Hono } from "hono";
-// import { verify } from "hono/jwt";
-
-// export const blogRouter = new Hono<{
-//   Bindings: {
-//     DATABASE_URL: string;
-//     JWT_SECRET: string;
-//   };
-//   Variables: {
-//     userId: string;
-//   };
-// }>();
-
-// blogRouter.use("/*", async (c, next) => {
-//   const authorizationHeader = c.req.header("Authorization");
-//   if (!authorizationHeader) {
-//     c.status(401);
-//     return c.json({ error: "Unauthorized: No Authorization header" });
+//     return c.json({ msg: "Invalid or expired token" });
 //   }
 
-//   const token = authorizationHeader.split(" ")[1];
+//   const postId: any = await c.req.param("id");
 //   try {
-//     const payload = await verify(token, c.env.JWT_SECRET);
-//     if (!payload || typeof payload.id !== "string") {
-//       c.status(401);
-//       return c.json({ error: "Unauthorized: Invalid token or payload" });
+//     // Retrieve the post to check if the user is authorized to delete it
+//     const post = await prisma.blog.findUnique({
+//       where: {
+//         id: postId,
+//       },
+//     });
+
+//     if (!post) {
+//       return c.json({ msg: "Post not found" });
 //     }
 
-//     c.set("userId", payload.id);
-//     await next();
-//   } catch (error) {
-//     c.status(401);
-//     return c.json({ error: "Unauthorized: Token verification failed" });
+//     if (post.authorId !== userId) {
+//       return c.json({ msg: "User not authorized to delete this post" });
+//     }
+//     console.log(post.authorId);
+//     console.log(userId);
+
+//     await prisma.blog.delete({
+//       where: {
+//         id: postId,
+//       },
+//     });
+
+//     return c.json({ message: "Successfully deleted blog" });
+//   } catch (e) {
+//     console.log(e);
+//     return c.json({ msg: "Failed to delete post" });
 //   }
-// });
-
-// blogRouter.post("/", async (c) => {
-//   const body: any = c.req.json();
-//   const prisma = new PrismaClient({
-//     datasourceUrl: c.env.DATABASE_URL,
-//   }).$extends(withAccelerate());
-
-//   const authorId = c.get("userId");
-//   const blog = await prisma.blog.create({
-//     data: {
-//       title: body.title,
-//       content: body.content,
-//       authorId: Number(authorId),
-//     },
-//   });
-//   return c.json({
-//     id: blog.id,
-//   });
-// });
-
-// blogRouter.put("/", async (c) => {
-//   const body: any = c.req.json();
-//   const prisma = new PrismaClient({
-//     datasourceUrl: c.env.DATABASE_URL,
-//   }).$extends(withAccelerate());
-
-//   const blog = await prisma.blog.update({
-//     where: {
-//       id: body.id,
-//     },
-//     data: {
-//       title: body.title,
-//       content: body.content,
-//     },
-//   });
-//   return c.json({
-//     id: blog.id,
-//   });
-// });
-
-// // TODO Pagination
-// blogRouter.get("/bulk", async (c) => {
-//   const prisma = new PrismaClient({
-//     datasourceUrl: c.env.DATABASE_URL,
-//   }).$extends(withAccelerate());
-//   const body: any = c.req.json();
-
-//   const blogs = await prisma.blog.findMany();
-
-//   return c.json({
-//     blogs,
-//   });
 // });
