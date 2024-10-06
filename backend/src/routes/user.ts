@@ -12,6 +12,7 @@ export const userRouter = new Hono<{
 }>();
 
 userRouter.post("/signup", async (c) => {
+  // get data from body
   const body = await c.req.json();
 
   const { success } = signupInput.safeParse(body);
@@ -22,11 +23,13 @@ userRouter.post("/signup", async (c) => {
     });
   }
 
+  // connect db
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
   try {
+    // check user existence
     const existingUser = await prisma.user.findUnique({
       where: { email: body.email },
     });
@@ -35,6 +38,7 @@ userRouter.post("/signup", async (c) => {
       c.status(409); // 409 Conflict
       return c.json({ message: "A user with this email already exists." });
     }
+    // create user
     const user = await prisma.user.create({
       data: {
         name: body.name,
@@ -42,6 +46,7 @@ userRouter.post("/signup", async (c) => {
         password: body.password,
       },
     });
+    // generate JWT token
     const jwt = await sign({ id: user.id }, c.env.JWT_SECRET);
     return c.json({ jwt });
   } catch (e) {
