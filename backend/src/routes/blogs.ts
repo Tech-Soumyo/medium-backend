@@ -19,7 +19,7 @@ blogRouter.use("/*", async (c, next) => {
   const authHeader = c.req.header("authorization") || "";
 
   try {
-    // Verify the JWT token
+    // Verify user through the JWT token
     const user = (await verify(authHeader, c.env.JWT_SECRET)) as {
       id: string;
     } | null;
