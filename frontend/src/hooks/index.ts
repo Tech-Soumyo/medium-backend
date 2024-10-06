@@ -24,6 +24,7 @@ export const useBlog = ({ id }: { id: string }) => {
       })
       .then((response) => {
         setBlog(response.data.blog);
+        console.log(response.data.blog);
       })
       .catch((error) => {
         console.error("Error fetching blog:", error);
