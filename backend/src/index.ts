@@ -15,7 +15,10 @@ const app = new Hono<{
 http: app.use(
   "/*",
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "https://medium2-4sc7v32gy-soumyodeeps-projects-9c45e977.vercel.app",
+      "https://medium2-ten.vercel.app",
+    ],
     // allowHeaders: ["X-Custom-Header", "Upgrade-Insecure-Requests"],
     allowMethods: ["POST", "GET", "OPTIONS", "PUT", "DELETE"],
     // exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
